@@ -1,0 +1,1 @@
+-keepclassmembers class org.xibo.playerhost.webview.JavascriptBridge { @android.webkit.JavascriptInterface <methods>; }

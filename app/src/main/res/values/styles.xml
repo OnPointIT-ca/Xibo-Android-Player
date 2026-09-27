@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.XiboPlayer" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#35A7FF</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">#101820</item>
+    </style>
+</resources>
