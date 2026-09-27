@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <title>xiboplayer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #player-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #overlay.visible {
+      opacity: 1;
+    }
+
+    #config-info {
+      color: #4CAF50;
+    }
+
+    #status {
+      color: #fff;
+    }
+
+    .status-error {
+      color: #f44336 !important;
+    }
+
+    .status-info {
+      color: #2196F3 !important;
+    }
+
+    /* Hide overlay by default - show only on hover */
+    #overlay {
+      display: none;
+    }
+
+    body:hover #overlay {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* When warnings are present, always show the bar (not just on hover) */
+    #overlay.has-warnings {
+      display: flex !important;
+      opacity: 1 !important;
+    }
+
+    /* Layout styles */
+    .xibo-layout {
+      width: 100%;
+      height: 100%;
+    }
+
+    .xibo-region {
+      position: absolute;
+      overflow: hidden;
+    }
+
+    .xibo-widget {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/main-BqUWhlUT.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-P2Xu9kJm.js">
+  <link rel="modulepreload" crossorigin href="./assets/preload-helper-HclGiUj8.js">
+</head>
+<body>
+  <!-- Status overlay -->
+  <div id="overlay">
+    <div id="config-info">Initializing...</div>
+    <div id="status">Loading player...</div>
+  </div>
+
+  <!-- Player rendering container -->
+  <div id="player-container"></div>
+
+  <!-- Remove status bar overlay unless explicitly enabled in config -->
+  <script>
+    // Read config from per-CMS storage (xibo_global + xibo_cms:{id}), fall back to legacy xibo_config
+    function readStoredConfig() {
+      try {
+        var activeCmsId = localStorage.getItem('xibo_active_cms');
+        if (activeCmsId) {
+          var global = JSON.parse(localStorage.getItem('xibo_global') || '{}');
+          var cms = JSON.parse(localStorage.getItem('xibo_cms:' + activeCmsId) || '{}');
+          return Object.assign({}, global, cms);
+        }
+        // Legacy fallback
+        return JSON.parse(localStorage.getItem('xibo_config') || '{}');
+      } catch (e) { return {}; }
+    }
+    try {
+      var cfg = readStoredConfig();
+      var hover = cfg.controls && cfg.controls.mouse && cfg.controls.mouse.statusBarOnHover;
+      if (hover !== true) {
+        document.getElementById('overlay').remove();
+      }
+    } catch (e) {}
+  </script>
+
+  <!-- Check for configuration before loading player -->
+  <script>
+    // Check if player is configured with valid CMS connection params
+    const params = new URLSearchParams(window.location.search);
+    const hasUrlConfig = params.has('cmsUrl') && params.has('cmsKey');
+
+    let hasStoredConfig = false;
+    try {
+      const storedCfg = readStoredConfig();
+      hasStoredConfig = !!(storedCfg.cmsUrl && storedCfg.cmsKey);
+    } catch (e) { /* corrupt config — treat as missing */ }
+
+    console.log('[Player] Has URL config:', hasUrlConfig);
+    console.log('[Player] Has valid stored config:', hasStoredConfig);
+
+    if (!hasUrlConfig && !hasStoredConfig) {
+      console.log('[Player] No valid config, redirecting to setup...');
+      window.location.replace('./setup.html' + window.location.search);
+      // Prevent main.ts from loading during redirect
+      window.__XIBO_REDIRECTING = true;
+    } else {
+      console.log('[Player] Configuration valid, loading player...');
+    }
+  </script>
+
+  <!-- Main player script — skipped if redirecting to setup -->
+</body>
+</html>
