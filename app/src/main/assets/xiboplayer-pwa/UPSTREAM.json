@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/xiboplayer/xiboplayer",
+  "commit": "98eeb1b31ee776250f72d1e9cdcaab8385d7976d",
+  "package": "@xiboplayer/pwa",
+  "version": "0.7.24-oidc.0",
+  "license": "AGPL-3.0-or-later",
+  "builtWith": "pnpm 10.27.0; pnpm --filter @xiboplayer/pwa build"
+}

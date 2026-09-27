@@ -1,0 +1,16 @@
+name: Android CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17', cache: gradle}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.11.1'}
+      - name: Verify pinned SDK distribution
+        run: test -s app/src/main/assets/xiboplayer-pwa/UPSTREAM.json && test -s app/src/main/assets/xiboplayer-pwa/assets/main-DsDuOpz0.js && test -s app/src/main/assets/xiboplayer-pwa/LICENSE
+      - run: gradle --no-daemon lint test assembleDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with: {name: debug-apk, path: 'app/build/outputs/apk/debug/*.apk'}
